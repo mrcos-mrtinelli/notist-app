@@ -12,16 +12,15 @@ class FolderViewController: UITableViewController {
     var notesManager = NotesManager()
     var currentFolderID: String!
     var folder: Folder!
+    var isNewNote: Bool!
+    var selectedNoteID: String!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        notesManager.delegate = self
+        
         setupNavigationController()
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
     // MARK: - Table view data source
@@ -34,7 +33,7 @@ class FolderViewController: UITableViewController {
         let note = folder.notes[indexPath.row]
         let noteComponents = note.body.components(separatedBy: "\n")
         
-        if noteComponents.count > 1 {
+        if noteComponents.count > 1 && noteComponents[1] != "" {
             cell.textLabel?.text = noteComponents.first
             cell.detailTextLabel?.text = noteComponents[1]
         } else {
@@ -44,57 +43,36 @@ class FolderViewController: UITableViewController {
         
         return cell
     }
-    
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let noteVC = storyboard?.instantiateViewController(identifier: "NoteView") as? NoteViewController {
+            noteVC.delegate = self
+            noteVC.noteBody = folder.notes[indexPath.row].body
+            
+            isNewNote = false
+            selectedNoteID = folder.notes[indexPath.row].id
+            
+            navigationController?.pushViewController(noteVC, animated: true)
+        }
+        
     }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
     
     // MARK: - Navigation
     func setupNavigationController() {
-        // icon
+        // icon and custom view
         let newNoteIcon = UIImage(systemName: "square.and.pencil")
+        let label = UILabel(frame: CGRect(x: .zero, y: .zero, width: 200, height: 21))
+        label.text = "\(folder.notes.count) notes"
+        label.textAlignment = .center
         
         // buttons
         let spacer = UIBarButtonItem(systemItem: .flexibleSpace)
+        let toolbarLabel = UIBarButtonItem(customView: label)
         let newNoteBtn = UIBarButtonItem(image: newNoteIcon, style: .plain, target: self, action: #selector((createNewNote)))
         
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.isToolbarHidden = false
         
-        toolbarItems = [spacer, newNoteBtn]
+        toolbarItems = [spacer, toolbarLabel, spacer, newNoteBtn]
         title = folder.name
         
         tableView.tableFooterView = UIView()
@@ -104,12 +82,30 @@ class FolderViewController: UITableViewController {
     @objc func createNewNote() {
         if let noteVC = storyboard?.instantiateViewController(identifier: "NoteView") as? NoteViewController {
             noteVC.delegate = self
+            
+            isNewNote = true
+            
             navigationController?.pushViewController(noteVC, animated: true)
         }
     }
 }
 extension FolderViewController: NotesViewControllerDelegate {
     func doneEditing(_ note: String) {
-        // stuff
+        if isNewNote {
+            guard note != "" else { return }
+            notesManager.createNew(note: note, in: currentFolderID)
+        } else {
+            notesManager.update(note: note, noteID: selectedNoteID, folderID: currentFolderID)
+        }
+    }
+}
+extension FolderViewController: NotesManagerDelegate {
+    func didSave(note: Note, to folders: [Folder]) {
+        let index = notesManager.getFolderIndex(for: currentFolderID, in: folders)
+        
+        folder = folders[index]
+        setupNavigationController()
+        
+        tableView.reloadData()
     }
 }

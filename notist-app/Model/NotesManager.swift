@@ -41,6 +41,18 @@ class NotesManager {
         
         delegate?.didSave(note: newNote, to: folders)
     }
+    func update(note: String, noteID: String, folderID: String) {
+        var savedData = getSavedFolders()
+        
+        let folderIndex = getFolderIndex(for: folderID, in: savedData)
+        let noteIndex = getNoteIndex(for: noteID, in: savedData[folderIndex])
+        
+        savedData[folderIndex].notes[noteIndex].body = note
+        
+        let updatedNote = savedData[folderIndex].notes[noteIndex]
+        
+        save(newNote: updatedNote, to: savedData)
+    }
     
     func getSavedFolders() -> [Folder] {
         let defaults = UserDefaults.standard
@@ -53,7 +65,7 @@ class NotesManager {
         
         return folders
     }
-    //MARK: Folder and Note
+    //MARK: Create new
     func createNew(folderNamed name: String) {
         let newFolder = Folder(id: UUID().uuidString, name: name, notes: [Note]())
         
@@ -75,7 +87,7 @@ class NotesManager {
         
         save(newNote: newNote, to: savedFolders)
     }
-    
+    //MARK: Folder and Note Utilities
     func sort(folders: [Folder]) -> [Folder] {
         var mutableFolders = folders
         let allNotesFolder = mutableFolders.removeFirst()
@@ -90,6 +102,12 @@ class NotesManager {
     func getFolderIndex(for folderID: String, in folders: [Folder]) -> Int {
         if let folderIndex = folders.firstIndex(where: {(folder) in folder.id == folderID}) {
             return folderIndex
+        }
+        return 0
+    }
+    func getNoteIndex(for noteID: String, in folder: Folder) -> Int {
+        if let noteIndex = folder.notes.firstIndex(where: { note in note.id == noteID }) {
+            return noteIndex
         }
         return 0
     }
@@ -110,7 +128,7 @@ class NotesManager {
     }
 }
 
-//extension NotesManagerDelegate {
-//    func didSave(folder: Folder, at index: Int) {}
-//    func didSave(note: Note, to: [Folder]) {}
-//}
+extension NotesManagerDelegate {
+    func didSave(folder: Folder, at index: Int) {}
+    func didSave(note: Note, to: [Folder]) {}
+}
