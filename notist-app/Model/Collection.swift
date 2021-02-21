@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+struct Collection {
+    var id: String
+    var name: String
+    var notes: [Note]
+}

@@ -6,3 +6,13 @@
 //
 
 import Foundation
+
+class NotesManager {
+    let key = "notistApp"
+    let defaultCollection = "allNotes"
+    
+    func getSavedNotes() -> [Collection] {
+        print("getSavedNotes()")
+        return [Collection(id: defaultCollection, name: "All Notes", notes: [Note]())]
+    }
+}

@@ -8,6 +8,14 @@
 import UIKit
 
 class MainViewController: UITableViewController {
+    var notesManager = NotesManager()
+    var allNotes = [Collection]()
+    
+    var currentFolder = "allNotes"
+    
+    override func viewWillAppear(_ animated: Bool) {
+        allNotes = notesManager.getSavedNotes()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,14 +29,14 @@ class MainViewController: UITableViewController {
     
     //MARK: Tableview Set Up
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return allNotes.count
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CollectionCell", for: indexPath)
         
         if let customCell = cell as? CollectionCell {
-            customCell.collectionTitle.text = "Collection Title"
-            customCell.totalCollections.text = "\(23)"
+            customCell.collectionTitle.text = allNotes[indexPath.row].name
+            customCell.totalCollections.text = "\(allNotes[indexPath.row].notes.count)"
         }
         
         return cell
