@@ -1,5 +1,5 @@
 //
-//  CollectionDetailController.swift
+//  FolderViewController.swift
 //  notist-app
 //
 //  Created by Marcos Martinelli on 2/15/21.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CollectionViewController: UITableViewController {
+class FolderViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

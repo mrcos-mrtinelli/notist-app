@@ -9,17 +9,17 @@ import Foundation
 
 class NotesManager {
     let key = "notistApp"
-    let defaultCollection = "allNotes"
+    let defaultFolder = "allNotes"
     
-    func getSavedNotes() -> [Collection] {
+    func getSavedNotes() -> [Folder] {
         let defaults = UserDefaults.standard
-        let defaultCollections = [Collection(id: defaultCollection, name: "All Notes", notes: [Note]())]
+        let allNotesFolder = [Folder(id: defaultFolder, name: "All Notes", notes: [Note]())]
         
         guard let savedData = defaults.object(forKey: key) as? Data,
-              let collections = try? JSONDecoder().decode([Collection].self, from: savedData) else {
-            return defaultCollections
+              let folders = try? JSONDecoder().decode([Folder].self, from: savedData) else {
+            return allNotesFolder
         }
         
-        return collections
+        return folders
     }
 }
