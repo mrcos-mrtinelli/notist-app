@@ -9,7 +9,7 @@ import UIKit
 
 class MainViewController: UITableViewController {
     var notesManager = NotesManager()
-    var allNotes = [Folder]()
+    var allFolders = [Folder]()
     
     var currentFolder = "allNotes"
 
@@ -26,26 +26,35 @@ class MainViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        allNotes = notesManager.getSavedFolders()
+        allFolders = notesManager.getSavedFolders()
         
         tableView.reloadData()
     }
     
-    //MARK: Tableview Set Up
+    // MARK: - Table view data source
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return allNotes.count
+        return allFolders.count
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "FolderCell", for: indexPath)
         
         if let customCell = cell as? FolderCell {
-            customCell.folderTitle.text = allNotes[indexPath.row].name
-            customCell.totalFolders.text = "\(allNotes[indexPath.row].notes.count)"
+            customCell.folderTitle.text = allFolders[indexPath.row].name
+            customCell.totalFolders.text = "\(allFolders[indexPath.row].notes.count)"
         }
         
         return cell
     }
-    //MARK: Navigation Controller Set up
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let folderVC = storyboard?.instantiateViewController(identifier: "FolderView") as? FolderViewController {
+            folderVC.currentFolderID = allFolders[indexPath.row].id
+            folderVC.folder = allFolders[indexPath.row]
+            
+            navigationController?.pushViewController(folderVC, animated: true)
+        }
+    }
+    
+    //MARK: - Navigation
     func setupNavigationController() {
         // icons
         let newFolderIcon = UIImage(systemName: "folder.badge.plus")
@@ -67,7 +76,7 @@ class MainViewController: UITableViewController {
         
     }
     
-    //MARK: Utilities
+    //MARK: - Utilities
     @objc func createNewFolder() {
         let ac = UIAlertController(title: "New Folder", message: "Enter a name for this folder", preferredStyle: .alert)
         let cancel = UIAlertAction(title: "Cancel", style: .default)
@@ -105,12 +114,12 @@ class MainViewController: UITableViewController {
 
 extension MainViewController: NotesManagerDelegate {
     func didSave(folder: Folder, at index: Int) {
-        allNotes.insert(folder, at: index)
+        allFolders.insert(folder, at: index)
         let indexPath = IndexPath(row: index, section: 0)
         tableView.insertRows(at: [indexPath], with: .automatic)
     }
     func didSave(note: Note, to folders: [Folder]) {
-        allNotes = folders
+        allFolders = folders
         tableView.reloadData()
     }
 }
