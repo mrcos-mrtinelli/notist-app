@@ -25,7 +25,7 @@ class MainViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        allNotes = notesManager.getSavedNotes()
+        allNotes = notesManager.getSavedFolders()
         tableView.reloadData()
     }
     
@@ -67,6 +67,30 @@ class MainViewController: UITableViewController {
     
     //MARK: Utilities
     @objc func createNewFolder() {
+        let ac = UIAlertController(title: "New Folder", message: "Enter a name for this folder", preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "Cancel", style: .default)
+        let save = UIAlertAction(title: "Save", style: .default) { [weak self, weak ac] _ in
+            guard let folderName = ac?.textFields?.first?.text else { fatalError() }
+            
+            self?.notesManager.createNew(folderNamed: folderName)
+        }
+        
+        ac.addTextField { (textField) in
+            textField.placeholder = "Name"
+            
+            NotificationCenter.default.addObserver(forName: UITextField.textDidChangeNotification, object: textField, queue: .main) { _ in
+                if textField.hasText {
+                    save.isEnabled = true
+                } else {
+                    save.isEnabled = false
+                }
+            }
+        }
+        save.isEnabled = false
+        ac.addAction(cancel)
+        ac.addAction(save)
+        
+        present(ac, animated: true)
         
     }
     @objc func createNewNote() {
