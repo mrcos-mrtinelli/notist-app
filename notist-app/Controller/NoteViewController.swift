@@ -7,23 +7,29 @@
 
 import UIKit
 
+protocol NotesViewControllerDelegate {
+    func doneEditing(_ note: String)
+}
+
 class NoteViewController: UIViewController {
+    @IBOutlet var textView: UITextView!
+    
+    var noteBody: String!
+    var delegate: NotesViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        
+        navigationItem.largeTitleDisplayMode = .never
+        
+        textView.text = noteBody
+        textView.becomeFirstResponder()
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if self.isMovingFromParent {
+            delegate?.doneEditing(textView.text)
+        }
     }
-    */
-
 }

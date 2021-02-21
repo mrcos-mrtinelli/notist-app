@@ -9,6 +9,7 @@ import Foundation
 
 protocol NotesManagerDelegate {
     func didSave(folder: Folder, at index: Int)
+    func didSave(note: Note, to folders: [Folder])
 }
 
 class NotesManager {
@@ -28,6 +29,17 @@ class NotesManager {
         defaults.set(encodedData, forKey: key)
         
         delegate?.didSave(folder: newFolder, at: index)
+    }
+    func save(newNote: Note, to folders: [Folder]) {
+        guard let encodedData = encodeJSON(folders: folders) else {
+            print("error encoding")
+            return
+        }
+        
+        let defaults = UserDefaults.standard
+        defaults.set(encodedData, forKey: key)
+        
+        delegate?.didSave(note: newNote, to: folders)
     }
     
     func getSavedFolders() -> [Folder] {
@@ -49,11 +61,19 @@ class NotesManager {
         allFolders.append(newFolder)
         
         let sortedFolders = sort(folders: allFolders)
-        let index = sortedFolders.firstIndex { folder in
-            folder.id == newFolder.id
-        }
+        let index = getFolderIndex(for: newFolder.id, in: sortedFolders)
         
-        save(newFolder: newFolder, at: index!, to: sortedFolders)
+        save(newFolder: newFolder, at: index, to: sortedFolders)
+    }
+    func createNew(note: String, in folderID: String) {
+        let newNote = Note(id: UUID().uuidString, body: note)
+        
+        var savedFolders = getSavedFolders()
+        let index = getFolderIndex(for: folderID, in: savedFolders)
+        
+        savedFolders[index].notes.append(newNote)
+        
+        save(newNote: newNote, to: savedFolders)
     }
     
     func sort(folders: [Folder]) -> [Folder] {
@@ -66,6 +86,12 @@ class NotesManager {
         sortedFolders.insert(allNotesFolder, at: 0)
         
         return sortedFolders
+    }
+    func getFolderIndex(for folderID: String, in folders: [Folder]) -> Int {
+        if let folderIndex = folders.firstIndex(where: {(folder) in folder.id == folderID}) {
+            return folderIndex
+        }
+        return 0
     }
     
     //MARK: JSON Utilities
@@ -84,6 +110,7 @@ class NotesManager {
     }
 }
 
-extension NotesManagerDelegate {
-    func didSave(folder: Folder, at index: Int) {}
-}
+//extension NotesManagerDelegate {
+//    func didSave(folder: Folder, at index: Int) {}
+//    func didSave(note: Note, to: [Folder]) {}
+//}

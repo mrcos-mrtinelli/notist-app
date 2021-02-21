@@ -96,7 +96,10 @@ class MainViewController: UITableViewController {
         
     }
     @objc func createNewNote() {
-        
+        if let noteVC = storyboard?.instantiateViewController(identifier: "NoteView") as? NoteViewController {
+            noteVC.delegate = self
+            navigationController?.pushViewController(noteVC, animated: true)
+        }
     }
 }
 
@@ -105,5 +108,15 @@ extension MainViewController: NotesManagerDelegate {
         allNotes.insert(folder, at: index)
         let indexPath = IndexPath(row: index, section: 0)
         tableView.insertRows(at: [indexPath], with: .automatic)
+    }
+    func didSave(note: Note, to folders: [Folder]) {
+        allNotes = folders
+        tableView.reloadData()
+    }
+}
+extension MainViewController: NotesViewControllerDelegate {
+    func doneEditing(_ note: String) {
+        guard note != "" else { return }
+        notesManager.createNew(note: note, in: currentFolder)
     }
 }
