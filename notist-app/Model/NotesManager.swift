@@ -12,7 +12,14 @@ class NotesManager {
     let defaultCollection = "allNotes"
     
     func getSavedNotes() -> [Collection] {
-        print("getSavedNotes()")
-        return [Collection(id: defaultCollection, name: "All Notes", notes: [Note]())]
+        let defaults = UserDefaults.standard
+        let defaultCollections = [Collection(id: defaultCollection, name: "All Notes", notes: [Note]())]
+        
+        guard let savedData = defaults.object(forKey: key) as? Data,
+              let collections = try? JSONDecoder().decode([Collection].self, from: savedData) else {
+            return defaultCollections
+        }
+        
+        return collections
     }
 }

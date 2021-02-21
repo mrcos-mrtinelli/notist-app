@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Note {
+struct Note: Codable {
     var id: String
     var body: String
 }

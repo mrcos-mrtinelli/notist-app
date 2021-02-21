@@ -12,10 +12,6 @@ class MainViewController: UITableViewController {
     var allNotes = [Collection]()
     
     var currentFolder = "allNotes"
-    
-    override func viewWillAppear(_ animated: Bool) {
-        allNotes = notesManager.getSavedNotes()
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +21,12 @@ class MainViewController: UITableViewController {
         tableView.tableFooterView = UIView() // remove toolbar separator/border
 
         setupNavigationController()
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        allNotes = notesManager.getSavedNotes()
+        tableView.reloadData()
     }
     
     //MARK: Tableview Set Up
@@ -63,7 +65,7 @@ class MainViewController: UITableViewController {
         
     }
     
-    //MARK: Actions
+    //MARK: Utilities
     @objc func createNewFolder() {
         
     }

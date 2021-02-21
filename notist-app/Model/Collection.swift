@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Collection {
+struct Collection: Codable {
     var id: String
     var name: String
     var notes: [Note]
