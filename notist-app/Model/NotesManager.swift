@@ -7,9 +7,14 @@
 
 import Foundation
 
+protocol NotesManagerDelegate {
+    func didSave(folder: Folder, at index: Int)
+}
+
 class NotesManager {
     let key = "notistApp"
     let defaultFolder = "allNotes"
+    var delegate: NotesManagerDelegate?
     
     
     //MARK: Save and Load
@@ -22,7 +27,7 @@ class NotesManager {
         let defaults = UserDefaults.standard
         defaults.set(encodedData, forKey: key)
         
-        print("saved to defaults")
+        delegate?.didSave(folder: newFolder, at: index)
     }
     
     func getSavedFolders() -> [Folder] {
@@ -77,4 +82,8 @@ class NotesManager {
             return nil
         }
     }
+}
+
+extension NotesManagerDelegate {
+    func didSave(folder: Folder, at index: Int) {}
 }

@@ -19,13 +19,15 @@ class MainViewController: UITableViewController {
         title = "Folders"
         
         tableView.tableFooterView = UIView() // remove toolbar separator/border
-
+        
+        notesManager.delegate = self
         setupNavigationController()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         allNotes = notesManager.getSavedFolders()
+        
         tableView.reloadData()
     }
     
@@ -98,3 +100,10 @@ class MainViewController: UITableViewController {
     }
 }
 
+extension MainViewController: NotesManagerDelegate {
+    func didSave(folder: Folder, at index: Int) {
+        allNotes.insert(folder, at: index)
+        let indexPath = IndexPath(row: index, section: 0)
+        tableView.insertRows(at: [indexPath], with: .automatic)
+    }
+}
