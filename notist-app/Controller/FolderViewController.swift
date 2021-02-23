@@ -33,16 +33,6 @@ class FolderViewController: UITableViewController {
     }
 
     // MARK: - Table view data source
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            let index = notesManager.getNoteIndex(for: folder.notes[indexPath.row].id, in: folder)
-            
-            folder.notes.remove(at: index)
-            notesCount = folder.notes.count
-            
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        }
-    }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return folder.notes.count
     }
@@ -72,6 +62,13 @@ class FolderViewController: UITableViewController {
             navigationController?.pushViewController(noteVC, animated: true)
         }
         
+    }
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let note = folder.notes[indexPath.row]
+            
+            notesManager.delete(note: note, fromFolder: folder)
+        }
     }
     
     // MARK: - Navigation
@@ -125,5 +122,13 @@ extension FolderViewController: NotesManagerDelegate {
         setupNavigationController()
         
         tableView.reloadData()
+    }
+    func didDelete(noteFromFolder: Folder, at index: Int) {
+        let indexPath = IndexPath(row: index, section: 0)
+        
+        folder = noteFromFolder
+        notesCount = folder.notes.count
+
+        tableView.deleteRows(at: [indexPath], with: .automatic)
     }
 }

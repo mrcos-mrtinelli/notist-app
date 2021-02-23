@@ -10,6 +10,7 @@ import Foundation
 protocol NotesManagerDelegate {
     func didSave(folder: Folder, at index: Int)
     func didSave(note: Note, to folders: [Folder])
+    func didDelete(noteFromFolder: Folder, at index: Int)
 }
 
 class NotesManager {
@@ -19,6 +20,15 @@ class NotesManager {
     
     
     //MARK: Save and Load
+    func save(_ allFolders: [Folder]) {
+        guard let encodedData = encodeJSON(folders: allFolders) else {
+            print("Error encoding")
+            return
+        }
+        
+        let defaults = UserDefaults.standard
+        defaults.set(encodedData, forKey: key)
+    }
     func save(newFolder: Folder, at index: Int, to allFolders: [Folder]) {
         guard let encodedData = encodeJSON(folders: allFolders) else {
             print("Error encoding")
@@ -87,6 +97,17 @@ class NotesManager {
         
         save(newNote: newNote, to: savedFolders)
     }
+    //MARK: Delete
+    func delete(note: Note, fromFolder: Folder) {
+        var allFolders = getSavedFolders()
+        let folderIndex = getFolderIndex(for: fromFolder.id, in: allFolders)
+        let noteIndex = getNoteIndex(for: note.id, in: fromFolder)
+        
+        allFolders[folderIndex].notes.remove(at: noteIndex)
+        
+        save(allFolders)
+        delegate?.didDelete(noteFromFolder: allFolders[folderIndex], at: noteIndex)
+    }
     //MARK: Folder and Note Utilities
     func sort(folders: [Folder]) -> [Folder] {
         var mutableFolders = folders
@@ -131,4 +152,5 @@ class NotesManager {
 extension NotesManagerDelegate {
     func didSave(folder: Folder, at index: Int) {}
     func didSave(note: Note, to: [Folder]) {}
+    func didDelete(noteFromFolder: Folder, at index: Int) {}
 }
