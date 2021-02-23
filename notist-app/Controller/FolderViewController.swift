@@ -14,17 +14,35 @@ class FolderViewController: UITableViewController {
     var folder: Folder!
     var isNewNote: Bool!
     var selectedNoteID: String!
+    var notesCountLabel: UILabel!
+    
+    var notesCount = 0 {
+        didSet {
+            notesCountLabel.text = "\(notesCount) notes"
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        notesManager.delegate = self
+        // edit row
+        navigationItem.rightBarButtonItem = self.editButtonItem
         
+        notesManager.delegate = self
         setupNavigationController()
     }
 
     // MARK: - Table view data source
-
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let index = notesManager.getNoteIndex(for: folder.notes[indexPath.row].id, in: folder)
+            
+            folder.notes.remove(at: index)
+            notesCount = folder.notes.count
+            
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        }
+    }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return folder.notes.count
     }
@@ -60,13 +78,13 @@ class FolderViewController: UITableViewController {
     func setupNavigationController() {
         // icon and custom view
         let newNoteIcon = UIImage(systemName: "square.and.pencil")
-        let label = UILabel(frame: CGRect(x: .zero, y: .zero, width: 200, height: 21))
-        label.text = "\(folder.notes.count) notes"
-        label.textAlignment = .center
+        notesCountLabel = UILabel(frame: CGRect(x: .zero, y: .zero, width: 200, height: 21))
+        notesCountLabel.textAlignment = .center
+        notesCount = folder.notes.count
         
         // buttons
         let spacer = UIBarButtonItem(systemItem: .flexibleSpace)
-        let toolbarLabel = UIBarButtonItem(customView: label)
+        let toolbarLabel = UIBarButtonItem(customView: notesCountLabel)
         let newNoteBtn = UIBarButtonItem(image: newNoteIcon, style: .plain, target: self, action: #selector((createNewNote)))
         
         navigationController?.navigationBar.prefersLargeTitles = true
