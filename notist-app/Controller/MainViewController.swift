@@ -62,17 +62,23 @@ class MainViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let folder = allFolders[indexPath.row]
-            let ac = UIAlertController(title: "Warning", message: "Deleting \"\(folder.name)\" will also delete \(allFolders[indexPath.row].notes.count) notes.", preferredStyle: .alert)
-            let cancel = UIAlertAction(title: "Cancel", style: .cancel)
-            let delete = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
-                guard let self = self else { return }
-                self.notesManager.delete(folder: folder)
+            
+            if folder.notes.count > 0 {
+                let ac = UIAlertController(title: "Warning", message: "Deleting \"\(folder.name)\" will also delete \(allFolders[indexPath.row].notes.count) notes.", preferredStyle: .alert)
+                let cancel = UIAlertAction(title: "Cancel", style: .cancel)
+                let delete = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+                    guard let self = self else { return }
+                    self.notesManager.delete(folder: folder)
+                }
+                
+                ac.addAction(cancel)
+                ac.addAction(delete)
+                
+                present(ac, animated: true)
+                
+            } else {
+                notesManager.delete(folder: folder)
             }
-            
-            ac.addAction(cancel)
-            ac.addAction(delete)
-            
-            present(ac, animated: true)
         }
     }
     
