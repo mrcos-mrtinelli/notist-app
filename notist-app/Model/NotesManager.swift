@@ -11,6 +11,7 @@ protocol NotesManagerDelegate {
     func didSave(folder: Folder, at index: Int)
     func didSave(note: Note, to folders: [Folder])
     func didDelete(noteFromFolder: Folder, at index: Int)
+    func didDelete(folderAt: Int, from folders: [Folder])
 }
 
 class NotesManager {
@@ -108,6 +109,15 @@ class NotesManager {
         save(allFolders)
         delegate?.didDelete(noteFromFolder: allFolders[folderIndex], at: noteIndex)
     }
+    func delete(folder: Folder) {
+        var allFolders = getSavedFolders()
+        let folderIndex = getFolderIndex(for: folder.id, in: allFolders)
+        
+        allFolders.remove(at: folderIndex)
+        
+        save(allFolders)
+        delegate?.didDelete(folderAt: folderIndex, from: allFolders)
+    }
     //MARK: Folder and Note Utilities
     func sort(folders: [Folder]) -> [Folder] {
         var mutableFolders = folders
@@ -153,4 +163,5 @@ extension NotesManagerDelegate {
     func didSave(folder: Folder, at index: Int) {}
     func didSave(note: Note, to: [Folder]) {}
     func didDelete(noteFromFolder: Folder, at index: Int) {}
+    func didDelete(folderAt: Int, from folders: [Folder]) {}
 }

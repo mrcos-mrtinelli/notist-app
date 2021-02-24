@@ -25,9 +25,6 @@ class FolderViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // edit row
-        navigationItem.rightBarButtonItem = self.editButtonItem
-        
         notesManager.delegate = self
         setupNavigationController()
     }
@@ -84,6 +81,7 @@ class FolderViewController: UITableViewController {
         let toolbarLabel = UIBarButtonItem(customView: notesCountLabel)
         let newNoteBtn = UIBarButtonItem(image: newNoteIcon, style: .plain, target: self, action: #selector((createNewNote)))
         
+        navigationItem.rightBarButtonItem = self.editButtonItem
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.isToolbarHidden = false
         
