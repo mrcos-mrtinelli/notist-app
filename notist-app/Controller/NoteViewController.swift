@@ -26,6 +26,9 @@ class NoteViewController: UIViewController {
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         
+        // add padding to textview
+        textView.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+        
         navigationItem.largeTitleDisplayMode = .never
         
         textView.text = noteBody
