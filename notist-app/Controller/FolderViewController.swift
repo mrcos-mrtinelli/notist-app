@@ -25,6 +25,8 @@ class FolderViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        tableView.allowsMultipleSelectionDuringEditing = true
+        
         notesManager.delegate = self
         setupNavigationController()
     }
@@ -49,16 +51,22 @@ class FolderViewController: UITableViewController {
         return cell
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let noteVC = storyboard?.instantiateViewController(identifier: "NoteView") as? NoteViewController {
-            noteVC.delegate = self
-            noteVC.noteBody = folder.notes[indexPath.row].body
-            
-            isNewNote = false
-            selectedNoteID = folder.notes[indexPath.row].id
-            
-            navigationController?.pushViewController(noteVC, animated: true)
+        if tableView.isEditing == true {
+            guard let index = tableView.indexPathsForSelectedRows else { return }
+            for i in index {
+                print("row: \(i.row)")
+            }
+        } else {
+            if let noteVC = storyboard?.instantiateViewController(identifier: "NoteView") as? NoteViewController {
+                noteVC.delegate = self
+                noteVC.noteBody = folder.notes[indexPath.row].body
+                
+                isNewNote = false
+                selectedNoteID = folder.notes[indexPath.row].id
+                
+                navigationController?.pushViewController(noteVC, animated: true)
+            }
         }
-        
     }
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
