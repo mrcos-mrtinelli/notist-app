@@ -61,7 +61,9 @@ class NoteViewController: UIViewController {
         textView.scrollRangeToVisible(selectedRange)
     }
     @objc func share() {
-        print("share!")
+        guard let noteBody = noteBody else { return }
+        let activityVC = UIActivityViewController(activityItems: [noteBody], applicationActivities: nil)
+        present(activityVC, animated: true)
     }
     func updateNavigationItem() {
         if textView.text != "" {
