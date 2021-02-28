@@ -21,11 +21,11 @@ class FolderViewController: UITableViewController {
             notesCountLabel.text = "\(notesCount) notes"
         }
     }
+    
+    var shareNotes = [Note]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        tableView.allowsMultipleSelectionDuringEditing = true
         
         notesManager.delegate = self
         setupNavigationController()
@@ -51,21 +51,14 @@ class FolderViewController: UITableViewController {
         return cell
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if tableView.isEditing == true {
-            guard let index = tableView.indexPathsForSelectedRows else { return }
-            for i in index {
-                print("row: \(i.row)")
-            }
-        } else {
-            if let noteVC = storyboard?.instantiateViewController(identifier: "NoteView") as? NoteViewController {
-                noteVC.delegate = self
-                noteVC.noteBody = folder.notes[indexPath.row].body
-                
-                isNewNote = false
-                selectedNoteID = folder.notes[indexPath.row].id
-                
-                navigationController?.pushViewController(noteVC, animated: true)
-            }
+        if let noteVC = storyboard?.instantiateViewController(identifier: "NoteView") as? NoteViewController {
+            noteVC.delegate = self
+            noteVC.noteBody = folder.notes[indexPath.row].body
+            
+            isNewNote = false
+            selectedNoteID = folder.notes[indexPath.row].id
+            
+            navigationController?.pushViewController(noteVC, animated: true)
         }
     }
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
@@ -109,6 +102,11 @@ class FolderViewController: UITableViewController {
             navigationController?.pushViewController(noteVC, animated: true)
         }
     }
+    @objc func share() {
+        for note in shareNotes {
+            print(note.body)
+        }
+    }
 }
 extension FolderViewController: NotesViewControllerDelegate {
     func doneEditing(_ note: String) {
@@ -120,6 +118,7 @@ extension FolderViewController: NotesViewControllerDelegate {
         }
     }
 }
+//MARK: - Extensions
 extension FolderViewController: NotesManagerDelegate {
     func didSave(note: Note, to folders: [Folder]) {
         let index = notesManager.getFolderIndex(for: currentFolderID, in: folders)
