@@ -31,6 +31,7 @@ class NoteViewController: UIViewController {
         
         navigationItem.largeTitleDisplayMode = .never
         
+        textView.delegate = self
         textView.text = noteBody
         textView.becomeFirstResponder()
     }
@@ -58,5 +59,24 @@ class NoteViewController: UIViewController {
 
         let selectedRange = textView.selectedRange
         textView.scrollRangeToVisible(selectedRange)
+    }
+    @objc func share() {
+        print("share!")
+    }
+    func updateNavigationItem() {
+        if textView.text != "" {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(share))
+        } else {
+            navigationItem.rightBarButtonItem = nil
+        }
+    }
+}
+
+extension NoteViewController: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        updateNavigationItem()
+    }
+    func textViewDidChange(_ textView: UITextView) {
+        updateNavigationItem()
     }
 }
