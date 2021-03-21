@@ -20,6 +20,7 @@
 		8D9ACA4F25DB7F8C008E4809 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9ACA4E25DB7F8C008E4809 /* Note.swift */; };
 		8D9ACA5825DB8087008E4809 /* FolderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9ACA5725DB8087008E4809 /* FolderCell.swift */; };
 		8DCB3F692608053A007321CD /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB3F672608053A007321CD /* DataModel.xcdatamodeld */; };
+		8DCB3F6D26080A90007321CD /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB3F6C26080A90007321CD /* DataManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		8D9ACA4E25DB7F8C008E4809 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		8D9ACA5725DB8087008E4809 /* FolderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderCell.swift; sourceTree = "<group>"; };
 		8DCB3F682608053A007321CD /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
+		8DCB3F6C26080A90007321CD /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 				8D9ACA4625DB7F63008E4809 /* NotesManager.swift */,
 				8D9ACA4B25DB7F81008E4809 /* Folder.swift */,
 				8D9ACA4E25DB7F8C008E4809 /* Note.swift */,
+				8DCB3F6C26080A90007321CD /* DataManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -190,6 +193,7 @@
 				8D9ACA4F25DB7F8C008E4809 /* Note.swift in Sources */,
 				8D9ACA2225DB7D42008E4809 /* AppDelegate.swift in Sources */,
 				8D9ACA4225DB7F2C008E4809 /* NoteViewController.swift in Sources */,
+				8DCB3F6D26080A90007321CD /* DataManager.swift in Sources */,
 				8D9ACA4C25DB7F81008E4809 /* Folder.swift in Sources */,
 				8D9ACA2425DB7D42008E4809 /* SceneDelegate.swift in Sources */,
 			);

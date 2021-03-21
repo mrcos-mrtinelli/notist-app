@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct Folder: Codable {
-    var id: String
-    var name: String
-    var notes: [Note]
-}
+//struct Folder: Codable {
+//    var id: String
+//    var name: String
+//    var notes: [Note]
+//}
