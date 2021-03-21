@@ -19,6 +19,7 @@
 		8D9ACA4C25DB7F81008E4809 /* Folder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9ACA4B25DB7F81008E4809 /* Folder.swift */; };
 		8D9ACA4F25DB7F8C008E4809 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9ACA4E25DB7F8C008E4809 /* Note.swift */; };
 		8D9ACA5825DB8087008E4809 /* FolderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9ACA5725DB8087008E4809 /* FolderCell.swift */; };
+		8DCB3F692608053A007321CD /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB3F672608053A007321CD /* DataModel.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		8D9ACA4B25DB7F81008E4809 /* Folder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Folder.swift; sourceTree = "<group>"; };
 		8D9ACA4E25DB7F8C008E4809 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		8D9ACA5725DB8087008E4809 /* FolderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderCell.swift; sourceTree = "<group>"; };
+		8DCB3F682608053A007321CD /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +95,7 @@
 		8D9ACA4925DB7F68008E4809 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				8DCB3F672608053A007321CD /* DataModel.xcdatamodeld */,
 				8D9ACA4625DB7F63008E4809 /* NotesManager.swift */,
 				8D9ACA4B25DB7F81008E4809 /* Folder.swift */,
 				8D9ACA4E25DB7F8C008E4809 /* Note.swift */,
@@ -180,6 +183,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D9ACA3F25DB7EEF008E4809 /* FolderViewController.swift in Sources */,
+				8DCB3F692608053A007321CD /* DataModel.xcdatamodeld in Sources */,
 				8D9ACA4725DB7F63008E4809 /* NotesManager.swift in Sources */,
 				8D9ACA5825DB8087008E4809 /* FolderCell.swift in Sources */,
 				8D9ACA2625DB7D42008E4809 /* MainViewController.swift in Sources */,
@@ -389,6 +393,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		8DCB3F672608053A007321CD /* DataModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				8DCB3F682608053A007321CD /* DataModel.xcdatamodel */,
+			);
+			currentVersion = 8DCB3F682608053A007321CD /* DataModel.xcdatamodel */;
+			path = DataModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 8D9ACA1625DB7D42008E4809 /* Project object */;
 }
