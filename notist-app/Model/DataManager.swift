@@ -10,6 +10,17 @@ import UIKit
 class DataManager {
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
+    //MARK: - Pre-load "All Notes" folder
+    func preLoadData() {
+        let folderCount = loadFolders()?.count
+        
+        if folderCount == 0 {
+            createNewFolder(name: "All Notes", id: "allNotesFolder")
+        }
+        
+        return
+    }
+    
     //MARK: - Load and Save Methods
     func loadFolders() -> [Folder]? {
         let request: NSFetchRequest<Folder> = Folder.fetchRequest()
@@ -24,10 +35,10 @@ class DataManager {
     }
     
     //MARK: - Data Manipulation Methods
-    func createNewFolder(name: String) {
+    func createNewFolder(name: String, id: String? = UUID().uuidString) {
         let newFolder = Folder(context: context)
-        newFolder.id = UUID()
         newFolder.name = name
+        newFolder.id = id
         
         do {
             try context.save()

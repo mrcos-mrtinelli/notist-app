@@ -9,7 +9,6 @@ import UIKit
 
 class MainViewController: UITableViewController {
     var searchController: UISearchController!
-//    var notesManager = NotesManager()
     let dataManager = DataManager()
     var allFolders: [Folder]?
     var filteredResults = [Folder]()
@@ -19,11 +18,12 @@ class MainViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        dataManager.preLoadData()
+        
         title = "Folders"
         
         tableView.tableFooterView = UIView() // remove toolbar separator/border
         
-//        notesManager.delegate = self
         setupNavigationController()
         setupSearchBar()
     }
@@ -146,7 +146,6 @@ class MainViewController: UITableViewController {
             
             DispatchQueue.main.async {
                 self.loadData()
-                self.tableView.reloadData()
             }
         }
         
