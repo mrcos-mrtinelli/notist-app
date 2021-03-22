@@ -3,6 +3,7 @@
     <entity name="Folder" representedClassName="Folder" syncable="YES" codeGenerationType="class">
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" attributeType="String"/>
+        <attribute name="notesCount" optional="YES" attributeType="Integer 64" derived="YES" derivationExpression="notes.@count" usesScalarValueType="YES"/>
         <relationship name="notes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Note" inverseName="parentFolder" inverseEntity="Note"/>
     </entity>
     <entity name="Note" representedClassName="Note" syncable="YES" codeGenerationType="class">
@@ -11,7 +12,7 @@
         <relationship name="parentFolder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Folder" inverseName="notes" inverseEntity="Folder"/>
     </entity>
     <elements>
-        <element name="Folder" positionX="-60.16351318359375" positionY="-79.93707275390625" width="128" height="88"/>
+        <element name="Folder" positionX="-60.16351318359375" positionY="-79.93707275390625" width="128" height="103"/>
         <element name="Note" positionX="143.7568969726562" positionY="-18.89862060546875" width="128" height="88"/>
     </elements>
 </model>

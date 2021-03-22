@@ -9,8 +9,9 @@ import UIKit
 
 class MainViewController: UITableViewController {
     var searchController: UISearchController!
-    var notesManager = NotesManager()
-    var allFolders = [Folder]()
+//    var notesManager = NotesManager()
+    let dataManager = DataManager()
+    var allFolders: [Folder]?
     var filteredResults = [Folder]()
     
     var currentFolder = "allNotes"
@@ -22,17 +23,25 @@ class MainViewController: UITableViewController {
         
         tableView.tableFooterView = UIView() // remove toolbar separator/border
         
-        notesManager.delegate = self
+//        notesManager.delegate = self
         setupNavigationController()
         setupSearchBar()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        allFolders = notesManager.getSavedFolders()
-        filteredResults = allFolders
+        loadData()
+    }
+    // MOVE THIS!
+    func loadData() {
+        allFolders = dataManager.loadFolders()
         
-        tableView.reloadData()
+        if let loadedFolders = allFolders {
+            filteredResults = loadedFolders
+            tableView.reloadData()
+        } else {
+            print("Error!")
+        }
     }
     
     // MARK: - Table view data source
@@ -44,18 +53,18 @@ class MainViewController: UITableViewController {
         
         if let customCell = cell as? FolderCell {
             customCell.folderTitle.text = filteredResults[indexPath.row].name
-            customCell.totalFolders.text = "\(filteredResults[indexPath.row].notes.count)"
+            customCell.totalFolders.text = "\(filteredResults[indexPath.row].notesCount)"
         }
         
         return cell
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let folderVC = storyboard?.instantiateViewController(identifier: "FolderView") as? FolderViewController {
-            folderVC.currentFolderID = filteredResults[indexPath.row].id
-            folderVC.folder = filteredResults[indexPath.row]
-            
-            navigationController?.pushViewController(folderVC, animated: true)
-        }
+//        if let folderVC = storyboard?.instantiateViewController(identifier: "FolderView") as? FolderViewController {
+//            folderVC.currentFolderID = filteredResults[indexPath.row].id
+//            folderVC.folder = filteredResults[indexPath.row]
+//            
+//            navigationController?.pushViewController(folderVC, animated: true)
+//        }
     }
     override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         if indexPath.row == 0 {
@@ -64,26 +73,26 @@ class MainViewController: UITableViewController {
         return .delete
     }
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            let folder = filteredResults[indexPath.row]
-            
-            if folder.notes.count > 0 {
-                let ac = UIAlertController(title: "Warning", message: "Deleting \"\(folder.name)\" will also delete \(filteredResults[indexPath.row].notes.count) notes.", preferredStyle: .alert)
-                let cancel = UIAlertAction(title: "Cancel", style: .cancel)
-                let delete = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
-                    guard let self = self else { return }
-                    self.notesManager.delete(folder: folder)
-                }
-                
-                ac.addAction(cancel)
-                ac.addAction(delete)
-                
-                present(ac, animated: true)
-                
-            } else {
-                notesManager.delete(folder: folder)
-            }
-        }
+//        if editingStyle == .delete {
+//            let folder = filteredResults[indexPath.row]
+//
+//            if folder.notes.count > 0 {
+//                let ac = UIAlertController(title: "Warning", message: "Deleting \"\(folder.name)\" will also delete \(filteredResults[indexPath.row].notes.count) notes.", preferredStyle: .alert)
+//                let cancel = UIAlertAction(title: "Cancel", style: .cancel)
+//                let delete = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+//                    guard let self = self else { return }
+//                    self.notesManager.delete(folder: folder)
+//                }
+//
+//                ac.addAction(cancel)
+//                ac.addAction(delete)
+//
+//                present(ac, animated: true)
+//
+//            } else {
+//                notesManager.delete(folder: folder)
+//            }
+//        }
     }
     
     //MARK: - Navigation
@@ -111,17 +120,17 @@ class MainViewController: UITableViewController {
     
     //MARK: - Search Bar
     func setupSearchBar() {
-        searchController = UISearchController(searchResultsController: nil)
-        searchController.delegate = self
-        searchController.searchResultsUpdater = self
-        searchController.searchBar.sizeToFit()
-        searchController.dimsBackgroundDuringPresentation = false
-        
-        searchController.searchBar.delegate = self
-        searchController.searchBar.autocapitalizationType = .none
-        
-        definesPresentationContext = true
-        tableView.tableHeaderView = searchController.searchBar
+//        searchController = UISearchController(searchResultsController: nil)
+//        searchController.delegate = self
+//        searchController.searchResultsUpdater = self
+//        searchController.searchBar.sizeToFit()
+//        searchController.dimsBackgroundDuringPresentation = false
+//
+//        searchController.searchBar.delegate = self
+//        searchController.searchBar.autocapitalizationType = .none
+//
+//        definesPresentationContext = true
+//        tableView.tableHeaderView = searchController.searchBar
         
     }
     
@@ -131,8 +140,14 @@ class MainViewController: UITableViewController {
         let cancel = UIAlertAction(title: "Cancel", style: .default)
         let save = UIAlertAction(title: "Save", style: .default) { [weak self, weak ac] _ in
             guard let folderName = ac?.textFields?.first?.text else { fatalError() }
+            guard let self = self else { return }
             
-            self?.notesManager.createNew(folderNamed: folderName)
+            self.dataManager.createNewFolder(name: folderName)
+            
+            DispatchQueue.main.async {
+                self.loadData()
+                self.tableView.reloadData()
+            }
         }
         
         ac.addTextField { (textField) in
@@ -154,51 +169,51 @@ class MainViewController: UITableViewController {
         
     }
     @objc func createNewNote() {
-        if let noteVC = storyboard?.instantiateViewController(identifier: "NoteView") as? NoteViewController {
-            noteVC.delegate = self
-            navigationController?.pushViewController(noteVC, animated: true)
-        }
-    }
+//        if let noteVC = storyboard?.instantiateViewController(identifier: "NoteView") as? NoteViewController {
+//            noteVC.delegate = self
+//            navigationController?.pushViewController(noteVC, animated: true)
+//        }
+//    }
 }
-extension MainViewController: UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
-    func updateSearchResults(for searchController: UISearchController) {
-        
-        if let searchText = searchController.searchBar.text {
-            // trim whitespace
-            let whiteSpace = CharacterSet.whitespaces
-            let strippedSearchText = searchText.trimmingCharacters(in: whiteSpace).lowercased()
-            
-            filteredResults = searchText.isEmpty ? allFolders : allFolders.filter { (folder) in
-                return folder.name.lowercased().contains(strippedSearchText)
-            }
-        }
-        tableView.reloadData()
-    }
-}
-extension MainViewController: NotesManagerDelegate {
-    func didSave(folder: Folder, at index: Int) {
-        allFolders.insert(folder, at: index)
-        filteredResults = allFolders
-        let indexPath = IndexPath(row: index, section: 0)
-        tableView.insertRows(at: [indexPath], with: .automatic)
-    }
-    func didSave(note: Note, to folders: [Folder]) {
-        allFolders = folders
-        filteredResults = allFolders
-        tableView.reloadData()
-    }
-    func didDelete(folderAt: Int, from folders: [Folder]) {
-        let indexPath = IndexPath(row: folderAt, section: 0)
-        
-        allFolders = folders
-        filteredResults = allFolders
-        
-        tableView.deleteRows(at: [indexPath], with: .automatic)
-    }
-}
-extension MainViewController: NotesViewControllerDelegate {
-    func doneEditing(_ note: String) {
-        guard note != "" else { return }
-        notesManager.createNew(note: note, in: currentFolder)
-    }
+//extension MainViewController: UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
+//    func updateSearchResults(for searchController: UISearchController) {
+//
+//        if let searchText = searchController.searchBar.text {
+//            // trim whitespace
+//            let whiteSpace = CharacterSet.whitespaces
+//            let strippedSearchText = searchText.trimmingCharacters(in: whiteSpace).lowercased()
+//
+//            filteredResults = searchText.isEmpty ? allFolders : allFolders.filter { (folder) in
+//                return folder.name.lowercased().contains(strippedSearchText)
+//            }
+//        }
+//        tableView.reloadData()
+//    }
+//}
+//extension MainViewController: NotesManagerDelegate {
+//    func didSave(folder: Folder, at index: Int) {
+//        allFolders.insert(folder, at: index)
+//        filteredResults = allFolders
+//        let indexPath = IndexPath(row: index, section: 0)
+//        tableView.insertRows(at: [indexPath], with: .automatic)
+//    }
+//    func didSave(note: Note, to folders: [Folder]) {
+//        allFolders = folders
+//        filteredResults = allFolders
+//        tableView.reloadData()
+//    }
+//    func didDelete(folderAt: Int, from folders: [Folder]) {
+//        let indexPath = IndexPath(row: folderAt, section: 0)
+//
+//        allFolders = folders
+//        filteredResults = allFolders
+//
+//        tableView.deleteRows(at: [indexPath], with: .automatic)
+//    }
+//}
+//extension MainViewController: NotesViewControllerDelegate {
+//    func doneEditing(_ note: String) {
+//        guard note != "" else { return }
+//        notesManager.createNew(note: note, in: currentFolder)
+//    }
 }
