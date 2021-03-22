@@ -13,15 +13,16 @@ class MainViewController: UITableViewController {
     var allFolders: [Folder]?
     var filteredResults = [Folder]()
     
-    var currentFolder = "allNotesFolder"
+    var currentFolderID = "allNotesFolder"
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = "Folders"
         tableView.tableFooterView = UIView() // remove toolbar separator/border
-            
+        
         dataManager.preLoadData()
+        dataManager.delegate = self
         setupNavigationController()
         setupSearchBar()
     }
@@ -133,7 +134,7 @@ class MainViewController: UITableViewController {
         } else {
             filteredResults = loadedFolders
             tableView.reloadData()
-        } 
+        }
     }
     @objc func createNewFolder() {
         let ac = UIAlertController(title: "New Folder", message: "Enter a name for this folder", preferredStyle: .alert)
@@ -168,12 +169,11 @@ class MainViewController: UITableViewController {
         
     }
     @objc func createNewNote() {
-//        if let noteVC = storyboard?.instantiateViewController(identifier: "NoteView") as? NoteViewController {
-//            noteVC.delegate = self
-//            navigationController?.pushViewController(noteVC, animated: true)
-//        }
-//    }
-}
+        if let noteVC = storyboard?.instantiateViewController(identifier: "NoteView") as? NoteViewController {
+            noteVC.delegate = self
+            navigationController?.pushViewController(noteVC, animated: true)
+        }
+    }
 //extension MainViewController: UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
 //    func updateSearchResults(for searchController: UISearchController) {
 //
@@ -210,9 +210,21 @@ class MainViewController: UITableViewController {
 //        tableView.deleteRows(at: [indexPath], with: .automatic)
 //    }
 //}
-//extension MainViewController: NotesViewControllerDelegate {
-//    func doneEditing(_ note: String) {
-//        guard note != "" else { return }
-//        notesManager.createNew(note: note, in: currentFolder)
-//    }
+}
+extension MainViewController: DataManagerDelegate {
+    func didSave() {
+        loadFolders()
+    }
+}
+extension MainViewController: NotesViewControllerDelegate {
+    func doneEditing(_ note: String) {
+        guard note != "" else { return }
+        guard let allFolders = allFolders else { return }
+        let index = dataManager.getFolderIndex(for: currentFolderID, in: allFolders)
+        let currentFolder = allFolders[index]
+        
+        let newNoteID = dataManager.createNew(note: note, in: currentFolder)
+        tableView.reloadData()
+        print("Saved new note with ID: \(newNoteID!)")
+    }
 }
