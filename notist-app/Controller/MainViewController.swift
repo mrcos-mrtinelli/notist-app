@@ -13,35 +13,22 @@ class MainViewController: UITableViewController {
     var allFolders: [Folder]?
     var filteredResults = [Folder]()
     
-    var currentFolder = "allNotes"
+    var currentFolder = "allNotesFolder"
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        dataManager.preLoadData()
-        
         title = "Folders"
-        
         tableView.tableFooterView = UIView() // remove toolbar separator/border
-        
+            
+        dataManager.preLoadData()
         setupNavigationController()
         setupSearchBar()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        loadData()
-    }
-    // MOVE THIS!
-    func loadData() {
-        allFolders = dataManager.loadFolders()
-        
-        if let loadedFolders = allFolders {
-            filteredResults = loadedFolders
-            tableView.reloadData()
-        } else {
-            print("Error!")
-        }
+        loadFolders()
     }
     
     // MARK: - Table view data source
@@ -95,7 +82,7 @@ class MainViewController: UITableViewController {
 //        }
     }
     
-    //MARK: - Navigation
+    //MARK: - Setup
     func setupNavigationController() {
         // icons
         let newFolderIcon = UIImage(systemName: "folder.badge.plus")
@@ -117,8 +104,6 @@ class MainViewController: UITableViewController {
         toolbarItems = [newFolderBtn, spacer, newNoteBtn]
         
     }
-    
-    //MARK: - Search Bar
     func setupSearchBar() {
 //        searchController = UISearchController(searchResultsController: nil)
 //        searchController.delegate = self
@@ -135,6 +120,21 @@ class MainViewController: UITableViewController {
     }
     
     //MARK: - Utilities
+    func loadFolders(withID: String? = nil) {
+        guard let loadedFolders = dataManager.loadFolders() else { return }
+        
+        allFolders = loadedFolders
+        filteredResults = loadedFolders
+        
+        if let newFolderID = withID {
+            let index = dataManager.getFolderIndex(for: newFolderID, in: filteredResults)
+            let indexPath = IndexPath(row: index, section: 0)
+            tableView.insertRows(at: [indexPath], with: .automatic)
+        } else {
+            filteredResults = loadedFolders
+            tableView.reloadData()
+        } 
+    }
     @objc func createNewFolder() {
         let ac = UIAlertController(title: "New Folder", message: "Enter a name for this folder", preferredStyle: .alert)
         let cancel = UIAlertAction(title: "Cancel", style: .default)
@@ -142,10 +142,10 @@ class MainViewController: UITableViewController {
             guard let folderName = ac?.textFields?.first?.text else { fatalError() }
             guard let self = self else { return }
             
-            self.dataManager.createNewFolder(name: folderName)
-            
-            DispatchQueue.main.async {
-                self.loadData()
+            if let newFolderID = self.dataManager.createNewFolder(name: folderName) {
+                DispatchQueue.main.async {
+                    self.loadFolders(withID: newFolderID)
+                }
             }
         }
         
