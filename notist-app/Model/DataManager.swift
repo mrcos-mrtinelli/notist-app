@@ -61,6 +61,14 @@ class DataManager {
             return nil
         }
     }
+    func loadItems(from folder: Folder) {
+        
+        let notes = folder.notes?.allObjects as! [Note]
+        
+        for note in notes {
+            print(note.id)
+        }
+    }
     
     //MARK: - Data Manipulation Methods
     func createNewFolder(name: String) -> String? {

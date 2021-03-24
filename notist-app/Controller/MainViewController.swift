@@ -47,12 +47,14 @@ class MainViewController: UITableViewController {
         return cell
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        if let folderVC = storyboard?.instantiateViewController(identifier: "FolderView") as? FolderViewController {
-//            folderVC.currentFolderID = filteredResults[indexPath.row].id
-//            folderVC.folder = filteredResults[indexPath.row]
-//            
-//            navigationController?.pushViewController(folderVC, animated: true)
-//        }
+                
+        if let folderVC = storyboard?.instantiateViewController(identifier: "FolderView") as? FolderViewController {
+            folderVC.currentFolderID = filteredResults[indexPath.row].id
+            folderVC.folder = filteredResults[indexPath.row]
+            folderVC.notes = filteredResults[indexPath.row].notes?.allObjects as? [Note]
+            
+            navigationController?.pushViewController(folderVC, animated: true)
+        }
     }
     override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         if indexPath.row == 0 {
